@@ -5,12 +5,12 @@ import { toast } from 'sonner';
 interface CrudService<T> {
   getAll: () => Promise<T[]>;
   getOne: (id: string | number) => Promise<T>;
-  create: (payload: Partial<T>) => Promise<T>;
-  update: (id: string | number, payload: Partial<T>) => Promise<T>;
+  create: (payload: any) => Promise<T>;
+  update: (id: string | number, payload: any) => Promise<T>;
   delete: (id: string | number) => Promise<void>;
 }
 
-export const useCrud = <T>(service: CrudService<T>, queryKey: string) => {
+export const useCrud = <T>(service: CrudService<T>, queryKey: string , options?: { enabled?: boolean }) => {
   const queryClient = useQueryClient();
 
   // 1. LEER (GET) - Maneja el estado de loading, error y la caché automáticamente
@@ -25,11 +25,12 @@ export const useCrud = <T>(service: CrudService<T>, queryKey: string) => {
     // Opcional: staleTime le dice a React Query cuánto tiempo la data es "fresca" 
     // antes de volver a pedirla en segundo plano (ej. 5 minutos)
     staleTime: 1000 * 60 * 5, 
+    enabled: options?.enabled !== undefined ? options.enabled : true, // 👈 2. Y ESTO
   });
 
   // 2. CREAR (POST)
   const createMutation = useMutation({
-    mutationFn: (newItem: Partial<T>) => service.create(newItem),
+    mutationFn: (newItem: any) => service.create(newItem),
     onSuccess: () => {
       // Magia pura: le decimos a React Query que la tabla cambió, 
       // y él solito hace el refetch de la grilla sin que tú programes nada más.
@@ -44,7 +45,7 @@ export const useCrud = <T>(service: CrudService<T>, queryKey: string) => {
 
   // 3. ACTUALIZAR (PATCH/PUT)
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string | number; data: Partial<T> }) => 
+    mutationFn: ({ id, data }: { id: string | number; data: any }) => 
       service.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [queryKey] });
