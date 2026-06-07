@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Ojo: en App Router se usa next/navigation
+import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { authService } from '../services/auth.service';
 import { useAuthStore } from '@/shared/store/useAuthStore';
 import { LoginCredentials } from '../login.types';
-import { toast } from 'sonner'; // Tu librería de notificaciones
+import { toast } from 'sonner';
 
 export function useAuth() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
   
   // Extraemos las funciones de nuestra "Memoria Global" (Zustand)
   const setLogin = useAuthStore((state) => state.setLogin);
@@ -19,7 +21,12 @@ export function useAuth() {
       // 1. Mandamos al mensajero al backend
       const response = await authService.login(credentials);
 
-      // 2. Guardamos los datos en la Memoria Global (Zustand)
+      // 2. Limpiamos el caché de React Query del usuario anterior
+      queryClient.clear();
+
+      // 3. Guardamos los datos en la Memoria Global (Zustand)
+      console.log('Token del usuario:', response.access_token);
+      console.log('Usuario:', response.usuario);
       setLogin(response.usuario, response.access_token);
 
       // 3. Guardamos la cookie para que el Middleware de Next.js la lea y proteja las rutas
@@ -55,7 +62,10 @@ export function useAuth() {
   };
 
   const logout = () => {
-    // 1. Borramos la memoria en Zustand y limpiamos la cookie
+    // 1. Limpiamos el caché de React Query
+    queryClient.clear();
+
+    // 2. Borramos la memoria en Zustand y limpiamos la cookie
     logoutState();
     
     // 2. Avisamos
