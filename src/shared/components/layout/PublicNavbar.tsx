@@ -2,25 +2,27 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ThemeToggle } from "@/shared/components/ThemeToggle";
 import { Button } from "@/shared/components/ui/button";
-import { 
-  Sheet, 
-  SheetContent, 
+import {
+  Sheet,
+  SheetContent,
   SheetTrigger,
   SheetHeader,
   SheetTitle
 } from "@/shared/components/ui/sheet";
-import { Menu, PawPrint } from "lucide-react";
+import { Menu } from "lucide-react";
 
 export default function PublicNavbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
-    { name: "Inicio", href: "/" },
-    { name: "Servicios", href: "/servicios" },
-    { name: "Nosotros", href: "/nosotros" },
-    { name: "Contacto", href: "/contacto" },
+    { name: "Inicio",            href: "/" },
+    { name: "Servicios",         href: "/servicios" },
+    { name: "Mascotas Perdidas", href: "/mascotas-perdidas" },
+    { name: "Nosotros",          href: "/nosotros" },
+    { name: "Contacto",          href: "/contacto" },
   ];
 
   return (
@@ -28,9 +30,14 @@ export default function PublicNavbar() {
       <div className="container mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
         
         {/* LOGO */}
-        <Link href="/" className="flex items-center gap-2 transition-transform hover:scale-105">
-          <PawPrint className="h-6 w-6 text-primary" />
-          <span className="font-bold text-xl tracking-tight text-primary">Huellitas</span>
+        <Link href="/" className="flex items-center transition-transform hover:scale-105">
+          <Image
+            src="/assets/Diseño sin título-Photoroom.png"
+            alt="Huellitas"
+            width={120}
+            height={52}
+            className="object-contain h-12 w-auto"
+          />
         </Link>
 
         {/* NAVEGACIÓN DESKTOP */}
@@ -72,7 +79,7 @@ export default function PublicNavbar() {
             <SheetContent side="right" className="w-[300px] sm:w-[400px]">
               <SheetHeader>
                 <SheetTitle className="flex items-center gap-2">
-                  <PawPrint className="h-5 w-5 text-primary" />
+                  <Image src="/assets/Diseño sin título-Photoroom.png" alt="Huellitas" width={100} height={44} className="object-contain h-10 w-auto" />
                   Huellitas
                 </SheetTitle>
               </SheetHeader>
@@ -92,7 +99,7 @@ export default function PublicNavbar() {
                     <Link href="/login" onClick={() => setIsOpen(false)}>Iniciar Sesión</Link>
                   </Button>
                   <Button className="w-full" asChild>
-                    <Link href="/registro" onClick={() => setIsOpen(false)}>Agendar Cita</Link>
+                    <Link href="/registro" onClick={() => setIsOpen(false)}>Agendar cita</Link>
                   </Button>
                 </div>
               </div>
