@@ -6,6 +6,9 @@ export interface User {
   id: string;
   nombres: string;
   apellidos: string;
+  email?: string;
+  telefono?: string;
+  avatar_url?: string | null;
   rol: {
     id: number;
     nombre: string;
@@ -16,6 +19,7 @@ interface AuthState {
   user: User | null;
   access_token: string | null;
   setLogin: (user: User, token: string) => void;
+  updateUser: (partial: Partial<User>) => void;
   logout: () => void;
 }
 
@@ -27,8 +31,12 @@ export const useAuthStore = create<AuthState>()(
       setLogin: (user, access_token) => {
   set({ user, access_token });
   // Seteamos la cookie para que el middleware de Next.js la lea
+  console.log('Setting cookie with token:', access_token);
   document.cookie = `usuario_token=${access_token}; path=/; max-age=86400; secure; samesite=strict`;
 },
+      updateUser: (partial) => set((state) => ({
+        user: state.user ? { ...state.user, ...partial } : null,
+      })),
       logout: () => {
         set({ user: null, access_token: null });
         document.cookie = "usuario_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
