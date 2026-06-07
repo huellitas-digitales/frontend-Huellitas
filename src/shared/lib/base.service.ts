@@ -16,7 +16,9 @@ export const createCrudService = <T>(endpoint: string) => {
 
     // Crear
     create: async (payload: Partial<T>): Promise<T> => {
+      console.log(`Creando en ${endpoint} con payload:`, payload);
       const { data } = await api.post<T>(endpoint, payload);
+      
       return data;
     },
 
