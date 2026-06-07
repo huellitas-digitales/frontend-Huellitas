@@ -1,82 +1,174 @@
-import React from "react";
-import Link from "next/link";
-import { ArrowLeft, PawPrint, Plus, Activity } from "lucide-react";
+'use client'
 
-// Componentes de Shadcn que ya tenemos
-import { Button } from "@/shared/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/card";
-import { Badge } from "@/shared/components/ui/badge";
+import Link from "next/link"
+import { ArrowLeft, PawPrint, Loader2, Plus, ChevronRight } from "lucide-react"
+import { Button } from "@/shared/components/ui/button"
+import { Card, CardContent, CardFooter } from "@/shared/components/ui/card"
+import { Badge } from "@/shared/components/ui/badge"
+import { useQuery } from "@tanstack/react-query"
+
+import { mascotasService } from "@/domains/pets/services/mascotas.service"
+import { Mascota, Raza, Especie } from "@/domains/pets/pets.types"
+import { speciesService } from "@/domains/pets/services/especies.service"
+import { breedsService } from "@/domains/pets/services/breeds.service"
+import { useCrud } from "@/shared/hooks/useCrud"
+import { useAuthStore } from "@/shared/store/useAuthStore"
 
 export default function MisMascotasPage() {
-  const misMascotas = [
-    { id: 1, nombre: "Boby", especie: "Canino", raza: "Golden Retriever", estado: "Sano", edad: "3 años" },
-    { id: 2, nombre: "Luna", especie: "Felino", raza: "Siamés", estado: "Tratamiento", edad: "1 año" },
-  ];
+  const user = useAuthStore((state) => state.user)
+
+  const { data: misMascotas = [], isLoading: loadingMascotas } = useQuery<Mascota[]>({
+    queryKey: ["mis-mascotas", user?.id],
+    queryFn: () => mascotasService.getMisMascotas(user!.id),
+    enabled: !!user?.id,
+  })
+  const { data: especies } = useCrud<Especie>(speciesService, "especies")
+  const { data: razas } = useCrud<Raza>(breedsService, "razas")
 
   return (
-    <div className="space-y-8 p-8 animate-in slide-in-from-bottom-4 duration-500">
-      
-      {/* CABECERA CON NAVEGACIÓN */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-muted/30 p-6 rounded-3xl border border-border/50">
-        <div>
-          {/* ESTE ES EL ENLACE MÁGICO DE NEXT.JS */}
-          <Link href="/">
-            <Button variant="ghost" size="sm" className="mb-2 rounded-xl text-muted-foreground hover:text-primary">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Volver al Centro de Comando
+    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500 pb-8">
+
+      {/* ─── PAGE HEADER ─── */}
+      <div>
+        <Link href="/cliente/inicio">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="-ml-2 mb-3 rounded-lg text-muted-foreground hover:text-foreground gap-1.5 h-8 text-xs"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Inicio
+          </Button>
+        </Link>
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">Mis mascotas</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              {loadingMascotas
+                ? "Cargando..."
+                : `${misMascotas.length} mascota${misMascotas.length !== 1 ? "s" : ""} registrada${misMascotas.length !== 1 ? "s" : ""}`}
+            </p>
+          </div>
+          <Link href="/cliente/mascotas/registro">
+            <Button size="sm" className="rounded-lg gap-1.5 h-9 text-sm shrink-0">
+              <Plus className="h-3.5 w-3.5" />
+              Registrar
             </Button>
           </Link>
-          <h1 className="text-3xl font-black tracking-tight flex items-center gap-3">
-            <PawPrint className="h-8 w-8 text-primary" />
-            Mis Mascotas
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Gestiona los perfiles y el historial de tus compañeros peludos.
-          </p>
         </div>
-
-        <Button size="lg" className="rounded-2xl shadow-md">
-          <Plus className="h-5 w-5 mr-2" /> Nueva Mascota
-        </Button>
       </div>
 
-      {/* CUADRÍCULA DE MASCOTAS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {misMascotas.map((mascota) => (
-          <Card key={mascota.id} className="rounded-3xl border-border/50 hover:shadow-lg transition-all group overflow-hidden">
-            <div className="h-24 bg-gradient-to-r from-primary/20 to-chart-1/20 w-full" />
-            <CardHeader className="relative pb-2 pt-0">
-              <div className="absolute -top-12 left-6 bg-background p-2 rounded-full border-2 border-muted shadow-sm">
-                <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center">
-                  <span className="text-2xl font-bold text-primary">{mascota.nombre.charAt(0)}</span>
-                </div>
-              </div>
-              <div className="mt-8 flex justify-between items-start">
-                <div>
-                  <CardTitle className="text-2xl">{mascota.nombre}</CardTitle>
-                  <CardDescription>{mascota.especie} • {mascota.raza}</CardDescription>
-                </div>
-                <Badge variant={mascota.estado === "Sano" ? "default" : "destructive"} className="rounded-full">
-                  {mascota.estado}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
-                <Activity className="h-4 w-4" /> Edad: {mascota.edad}
-              </div>
-            </CardContent>
-            <CardFooter className="bg-muted/10 border-t border-border/40 p-4">
-              {/* OTRO ENLACE: Navegación dinámica (ej. /cliente/mascotas/1) */}
-              <Link href={`/cliente/mascotas/${mascota.id}`} className="w-full">
-                <Button variant="secondary" className="w-full rounded-xl group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                  Ver Perfil Clínico
-                </Button>
-              </Link>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+      {/* ─── CONTENT ─── */}
+      {loadingMascotas ? (
+        <div className="flex items-center justify-center py-20 gap-2 text-muted-foreground">
+          <Loader2 className="h-5 w-5 animate-spin text-primary" />
+          <span className="text-sm">Cargando tus mascotas...</span>
+        </div>
+      ) : misMascotas.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-24 gap-4 border border-dashed border-border rounded-2xl text-center px-8">
+          <div className="h-14 w-14 rounded-2xl bg-muted/60 flex items-center justify-center">
+            <PawPrint className="h-6 w-6 text-muted-foreground/40" />
+          </div>
+          <div className="space-y-1">
+            <p className="font-semibold text-foreground">Todavia no tienes mascotas</p>
+            <p className="text-sm text-muted-foreground max-w-xs">
+              Registra a tu mascota para acceder a su perfil clinico, historial de vacunas y carnet QR.
+            </p>
+          </div>
+          <Link href="/cliente/mascotas/registro">
+            <Button size="sm" className="rounded-lg gap-1.5 mt-1">
+              <Plus className="h-3.5 w-3.5" />
+              Registrar primera mascota
+            </Button>
+          </Link>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {misMascotas.map((mascota) => {
+            const raza = (razas ?? []).find(r => Number(r.id) === Number(mascota.id_raza_fk))
+            const especie = (especies ?? []).find(e => Number(e.id) === Number(raza?.id_especie_fk))
+
+            return (
+              <Card
+                key={mascota.id}
+                className="rounded-xl border-border/50 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all group flex flex-col overflow-hidden"
+              >
+                <CardContent className="p-5 flex-1 space-y-4">
+
+                  {/* Avatar + nombre */}
+                  <div className="flex items-center gap-3.5">
+                    <div className="h-11 w-11 rounded-full overflow-hidden bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                      {(mascota as any).foto_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={(mascota as any).foto_url} alt={mascota.nombre} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-base font-bold text-primary">
+                          {mascota.nombre.charAt(0).toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-foreground truncate">{mascota.nombre}</h3>
+                      <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                        {especie?.nombre ?? "Mascota"}
+                        {raza?.nombre ? ` · ${raza.nombre}` : ""}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Datos */}
+                  <div className="space-y-2 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Sexo</span>
+                      <span className="font-medium text-foreground">
+                        {mascota.sexo === "M" ? "Macho" : "Hembra"}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Nacimiento</span>
+                      <span className="font-medium text-foreground">
+                        {mascota.fecha_nacimiento
+                          ? new Date(mascota.fecha_nacimiento).toLocaleDateString("es", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })
+                          : "No registrada"}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Esterilizado</span>
+                      <Badge
+                        variant="outline"
+                        className={`text-[10px] h-5 px-1.5 font-medium ${
+                          mascota.esterilizado
+                            ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-400"
+                            : "border-border bg-transparent text-muted-foreground"
+                        }`}
+                      >
+                        {mascota.esterilizado ? "Si" : "No"}
+                      </Badge>
+                    </div>
+                  </div>
+                </CardContent>
+
+                <CardFooter className="px-5 py-3 border-t border-border/50 bg-muted/20">
+                  <Link href={`/cliente/mascotas/${mascota.id}`} className="w-full">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full rounded-lg h-8 text-xs font-medium gap-1 group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                    >
+                      Ver perfil clinico
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </Button>
+                  </Link>
+                </CardFooter>
+              </Card>
+            )
+          })}
+        </div>
+      )}
     </div>
-  );
+  )
 }
