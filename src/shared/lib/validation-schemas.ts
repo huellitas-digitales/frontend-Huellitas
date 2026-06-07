@@ -1,4 +1,3 @@
-import { create } from "domain";
 import { z } from "zod";
 
 // --- REGLAS REUTILIZABLES ---
@@ -36,5 +35,46 @@ export const especieSchema = z.object({
     .max(50, "El nombre es demasiado largo"),
 });
 
-// Extraemos el tipo solo para el formulario (sin el ID, porque el ID lo crea la base de datos)
 export type EspecieFormData = z.infer<typeof especieSchema>;
+
+export const razaSchema = z.object({
+  nombre: z.string()
+    .min(2, "El nombre debe tener al menos 2 letras")
+    .max(50, "El nombre es demasiado largo"),
+  id_especie_fk: z.number().positive("Selecciona una especie válida"),
+});
+
+export type RazaFormData = z.infer<typeof razaSchema>;
+
+export const servicioSchema = z.object({
+  nombre: z.string()
+    .min(2, "El nombre del servicio debe tener al menos 2 letras")
+    .max(100),
+  descripcion: z.string().max(500).optional(),
+  precio: z.number().min(0, "El precio no puede ser negativo"),
+  duracion_minutos: z.number().int().positive("La duración debe ser positiva"),
+  requiere_veterinario: z.boolean(),
+});
+
+export type ServicioFormData = z.infer<typeof servicioSchema>;
+
+export const vacunaSchema = z.object({
+  nombre: z.string()
+    .min(2, "El nombre de la vacuna debe tener al menos 2 letras")
+    .max(100),
+  descripcion: z.string().max(500).optional(),
+  diasParaRefuerzo: z.number().int().positive("Los días para refuerzo deben ser mayores a 0"),
+  id_especie_fk: z.number().positive("Selecciona una especie válida"),
+  id_producto_fk: z.string().uuid().optional().nullable(), // <-- NUEVO CAMPO
+});
+
+export type VacunaFormData = z.infer<typeof vacunaSchema>;
+
+export const categoriaSchema = z.object({
+  nombre: z.string()
+    .min(2, "El nombre de la categoría debe tener al menos 2 letras")
+    .max(100),
+  descripcion: z.string().max(500).optional(),
+});
+
+export type CategoriaFormData = z.infer<typeof categoriaSchema>;
