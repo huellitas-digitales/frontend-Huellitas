@@ -301,7 +301,7 @@ export default function ClienteInicioPage() {
                         <Badge variant="outline" className={`text-[10px] shrink-0 ${cfg.cls}`}>
                           {cfg.label}
                         </Badge>
-                        {(cita.estado === "Pendiente_Confirmacion" || cita.estado === "Confirmada") &&
+                        {(cita.estado === "Pendiente_Confirmacion" || cita.estado === "Pendiente" || cita.estado === "Confirmada") &&
                           new Date(cita.fecha_hora_inicio) > ahora && (
                           <Button
                             variant="ghost"
