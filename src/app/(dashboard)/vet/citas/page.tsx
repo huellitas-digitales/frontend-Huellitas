@@ -426,8 +426,28 @@ const handleIniciarConsulta = async (citaId: string, estadoActual: string) => {
 
                   <div className="flex flex-col gap-1.5 text-xs text-muted-foreground border-t border-border/30 pt-2.5">
                     <div className="flex items-center gap-1.5 font-mono">
-                      <Clock className="h-3.5 w-3.5 text-primary" /> <strong>{cita.hora} Hrs</strong>
+                      <Clock className="h-3.5 w-3.5 text-primary" /> <strong>Agendada: {cita.hora} Hrs</strong>
                     </div>
+                    {(() => {
+                      const citaRaw = (appointments ?? []).find((a) => a.id === cita.id);
+                      if (cita.estado === "Completada" && citaRaw?.updatedAt) {
+                        return (
+                          <div className="flex items-center gap-1.5 font-mono text-green-600 dark:text-green-400">
+                            <Clock className="h-3.5 w-3.5" />
+                            <strong>Atendida: {new Date(citaRaw.updatedAt).toLocaleString("es-BO", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</strong>
+                          </div>
+                        );
+                      }
+                      if (cita.estado === "Cancelada" && citaRaw?.updatedAt) {
+                        return (
+                          <div className="flex items-center gap-1.5 font-mono text-destructive">
+                            <Clock className="h-3.5 w-3.5" />
+                            <strong>Cancelada: {new Date(citaRaw.updatedAt).toLocaleString("es-BO", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</strong>
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
                     <div className="flex items-center gap-1.5">
                       <Stethoscope className="h-3.5 w-3.5 text-primary" /> <strong>{cita.servicio}</strong>
                     </div>
