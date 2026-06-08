@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${inter.variable}`} suppressHydrationWarning>
       <body className="font-sans antialiased min-h-screen bg-background text-foreground" suppressHydrationWarning>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <QueryProvider>
             {children}
             {/* El Toaster se queda aquí adentro para escuchar a tus hooks useCrud */}
