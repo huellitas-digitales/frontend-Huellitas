@@ -464,6 +464,19 @@ export default function CajaAgendaPage() {
                         <Badge className={`${cfg.badge} gap-1`}>
                           <cfg.icon className="h-3 w-3" /> {cfg.label}
                         </Badge>
+                        {cita.estado === "Completada" && cita.updatedAt ? (
+                          <p className="text-[10px] text-muted-foreground/60 mt-1">
+                            Atendida {format(parseISO(String(cita.updatedAt)), "d MMM HH:mm", { locale: es })}
+                          </p>
+                        ) : cita.estado === "Cancelada" && cita.updatedAt ? (
+                          <p className="text-[10px] text-muted-foreground/60 mt-1">
+                            Cancelada {format(parseISO(String(cita.updatedAt)), "d MMM HH:mm", { locale: es })}
+                          </p>
+                        ) : cita.createdAt ? (
+                          <p className="text-[10px] text-muted-foreground/60 mt-1">
+                            Agendada {format(parseISO(String(cita.createdAt)), "d MMM", { locale: es })}
+                          </p>
+                        ) : null}
                       </TableCell>
                       <TableCell className="text-right px-6">
                         {next.length > 0 ? (

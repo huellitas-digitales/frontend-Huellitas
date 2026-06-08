@@ -238,6 +238,19 @@ export default function AgendaDelDiaPage() {
                           </span>
                         )}
                       </div>
+                      {estado === "Completada" && (cita as any).updatedAt ? (
+                        <p className="text-[10px] text-muted-foreground/60 mt-0.5">
+                          Atendida el {format(new Date((cita as any).updatedAt), "d MMM yyyy HH:mm", { locale: es })}
+                        </p>
+                      ) : estado === "Cancelada" && (cita as any).updatedAt ? (
+                        <p className="text-[10px] text-muted-foreground/60 mt-0.5">
+                          Cancelada el {format(new Date((cita as any).updatedAt), "d MMM yyyy HH:mm", { locale: es })}
+                        </p>
+                      ) : (cita as any).createdAt ? (
+                        <p className="text-[10px] text-muted-foreground/60 mt-0.5">
+                          Agendada: {format(new Date((cita as any).createdAt), "d MMM yyyy", { locale: es })}
+                        </p>
+                      ) : null}
                     </div>
 
                     {/* Acción */}
