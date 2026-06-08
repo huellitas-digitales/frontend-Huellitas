@@ -3,7 +3,12 @@ import { LoginCredentials, LoginResponse } from "../login.types"
 
 export const authService = {
   login: async (credentials: LoginCredentials) => {
-    const { data } = await api.post<LoginResponse>('/auth/login', credentials);
+    const { data } = await api.post<any>('/auth/login', credentials);
+    return data;
+  },
+
+  verificarOtp: async (email: string, codigo: string): Promise<LoginResponse> => {
+    const { data } = await api.post<LoginResponse>('/auth/verificar-otp', { email, codigo });
     return data;
   },
 
