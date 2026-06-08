@@ -71,14 +71,15 @@ export default function HistorialMascotasPage() {
       : null;
 
     return {
-      id:          h.id,
-      mascota:     h.mascota?.nombre || "Mascota",
-      fecha:       h.fecha_consulta ? h.fecha_consulta.split("T")[0] : "—",
-      tipo:        h.tipo_atencion || "Consulta",
-      servicio:    h.tipo_atencion === "Consulta" ? "Consulta Medica" : h.tipo_atencion || "Atencion Veterinaria",
-      veterinario: h.veterinario || "—",
-      diagnostico: h.diagnostico,
-      receta:      recetaMapeada,
+      id:             h.id,
+      mascota:        h.mascota?.nombre || "Mascota",
+      fecha:          h.fecha_consulta ? h.fecha_consulta.split("T")[0] : "—",
+      fecha_agendada: h.fecha_agendada ?? null,
+      tipo:           h.tipo_atencion || "Consulta",
+      servicio:       h.tipo_atencion === "Consulta" ? "Consulta Medica" : h.tipo_atencion || "Atencion Veterinaria",
+      veterinario:    h.veterinario || "—",
+      diagnostico:    h.diagnostico,
+      receta:         recetaMapeada,
     };
   });
 
