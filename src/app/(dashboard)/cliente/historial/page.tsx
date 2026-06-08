@@ -77,7 +77,7 @@ export default function HistorialMascotasPage() {
       tipo:        h.tipo_atencion || "Consulta",
       servicio:    h.tipo_atencion === "Consulta" ? "Consulta Medica" : h.tipo_atencion || "Atencion Veterinaria",
       veterinario: h.veterinario
-        ? `${h.veterinario.nombres} ${h.veterinario.apellidos}`
+        ? [h.veterinario.nombres, h.veterinario.apellidos].filter(Boolean).join(" ") || "Medico Huellitas"
         : "Medico Huellitas",
       diagnostico: h.diagnostico,
       receta:      recetaMapeada,
@@ -93,7 +93,9 @@ export default function HistorialMascotasPage() {
       tipo:        "Vacunación",
       // el backend serializa vacuna como string (nombre), no como objeto
       servicio:    typeof v.vacuna === "string" ? v.vacuna : (v.vacuna?.nombre ?? "Vacunacion"),
-      veterinario: h.veterinario ?? "Medico Huellitas",
+      veterinario: h.veterinario
+        ? [h.veterinario.nombres, h.veterinario.apellidos].filter(Boolean).join(" ") || "Medico Huellitas"
+        : "Medico Huellitas",
       diagnostico: v.peso_al_aplicar ? `Peso al aplicar: ${v.peso_al_aplicar} kg` : "Vacuna aplicada",
       receta:      null,
     }))
