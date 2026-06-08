@@ -520,9 +520,18 @@ fecha_hora_inicio: `${form.fecha}T${form.hora}:00`,      origen_reserva: 'RECEPC
                         <span className="font-semibold text-foreground/80">{cita.servicio?.nombre || 'Servicio'}</span>
                         <span className="text-muted-foreground/60">•</span>
                         <span className="flex items-center gap-1">
-                          <User className="h-3 w-3 text-muted-foreground/60" /> 
+                          <User className="h-3 w-3 text-muted-foreground/60" />
                           Dr(a). {cita.veterinario ? `${cita.veterinario.nombres} ${cita.veterinario.apellidos}` : 'No asignado'}
                         </span>
+                      </p>
+                      <p className="text-[11px] text-muted-foreground/70 mt-1 flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {cita.estado === 'Completada' && (cita as any).updatedAt
+                          ? `Atendida el ${new Date((cita as any).updatedAt).toLocaleString('es-BO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`
+                          : cita.estado === 'Cancelada' && (cita as any).updatedAt
+                          ? `Cancelada el ${new Date((cita as any).updatedAt).toLocaleString('es-BO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`
+                          : `Agendada: ${new Date(cita.fecha_hora_inicio).toLocaleString('es-BO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`
+                        }
                       </p>
                     </div>
                     

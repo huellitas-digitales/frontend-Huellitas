@@ -289,6 +289,14 @@ export default function ClienteInicioPage() {
                           <p className="text-xs text-muted-foreground truncate">
                             {cita.mascota?.nombre ?? "—"}
                           </p>
+                          <p className="text-[10px] text-muted-foreground/70 mt-0.5">
+                            {cita.estado === "Completada" && cita.updatedAt
+                              ? `Atendida el ${format(new Date(cita.updatedAt), "d MMM yyyy HH:mm", { locale: es })}`
+                              : cita.estado === "Cancelada" && cita.updatedAt
+                              ? `Cancelada el ${format(new Date(cita.updatedAt), "d MMM yyyy HH:mm", { locale: es })}`
+                              : `Agendada: ${format(new Date(cita.fecha_hora_inicio), "d MMM yyyy HH:mm", { locale: es })}`
+                            }
+                          </p>
                         </div>
                         <Badge variant="outline" className={`text-[10px] shrink-0 ${cfg.cls}`}>
                           {cfg.label}
