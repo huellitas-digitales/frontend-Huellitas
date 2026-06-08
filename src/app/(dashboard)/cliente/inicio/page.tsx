@@ -268,61 +268,73 @@ export default function ClienteInicioPage() {
                   </Button>
                 </Link>
               </div>
-              <div className="rounded-xl border border-border/50 bg-card shadow-sm overflow-hidden">
-                {todasLasCitas.map((cita: any, i: number) => {
+              <div className="rounded-xl border border-border/50 bg-card shadow-sm divide-y divide-border/40">
+                {todasLasCitas.map((cita: any) => {
                   const cfg = ESTADO[cita.estado] ?? { label: cita.estado, cls: "border-border bg-muted text-muted-foreground", icon: Clock };
+                  const Icon = cfg.icon;
+                  const cancelable = (cita.estado === "Pendiente_Confirmacion" || cita.estado === "Pendiente" || cita.estado === "Confirmada") && new Date(cita.fecha_hora_inicio) > ahora;
+                  const fechaProg = format(parseISO(String(cita.fecha_hora_inicio)), "d MMM yyyy · HH:mm", { locale: es });
+                  const fechaInfo = cita.estado === "Completada" && cita.updatedAt
+                    ? `Atendida el ${format(new Date(cita.updatedAt), "d MMM yyyy · HH:mm", { locale: es })}`
+                    : cita.estado === "Cancelada" && cita.updatedAt
+                    ? `Cancelada el ${format(new Date(cita.updatedAt), "d MMM yyyy · HH:mm", { locale: es })}`
+                    : null;
                   return (
-                    <div key={cita.id}>
-                      <div className="flex items-center gap-3.5 px-4 py-3">
-                        <div className="shrink-0 w-8 text-center">
-                          <p className="text-sm font-bold text-foreground leading-none">
-                            {format(parseISO(String(cita.fecha_hora_inicio)), "dd")}
-                          </p>
-                          <p className="text-[10px] text-muted-foreground uppercase leading-none mt-0.5">
-                            {format(parseISO(String(cita.fecha_hora_inicio)), "MMM", { locale: es })}
-                          </p>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground truncate">
+                    <div key={cita.id} className="px-4 py-3.5 flex items-start gap-3">
+                      {/* Ícono de estado */}
+                      <div className={`mt-0.5 shrink-0 h-8 w-8 rounded-lg flex items-center justify-center ${cfg.cls}`}>
+                        <Icon className="h-4 w-4" />
+                      </div>
+
+                      {/* Info principal */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="text-sm font-semibold text-foreground truncate">
                             {cita.servicio?.nombre ?? "Consulta"}
                           </p>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {cita.mascota?.nombre ?? "—"}
-                          </p>
-                          <p className="text-[10px] text-muted-foreground/70 mt-0.5">
-                            {cita.estado === "Completada" && cita.updatedAt
-                              ? `Atendida el ${format(new Date(cita.updatedAt), "d MMM yyyy HH:mm", { locale: es })}`
-                              : cita.estado === "Cancelada" && cita.updatedAt
-                              ? `Cancelada el ${format(new Date(cita.updatedAt), "d MMM yyyy HH:mm", { locale: es })}`
-                              : `Agendada: ${format(new Date(cita.fecha_hora_inicio), "d MMM yyyy HH:mm", { locale: es })}`
-                            }
-                          </p>
+                          <Badge variant="outline" className={`text-[10px] shrink-0 ${cfg.cls}`}>
+                            {cfg.label}
+                          </Badge>
                         </div>
-                        <Badge variant="outline" className={`text-[10px] shrink-0 ${cfg.cls}`}>
-                          {cfg.label}
-                        </Badge>
-                        {(cita.estado === "Pendiente_Confirmacion" || cita.estado === "Pendiente" || cita.estado === "Confirmada") &&
-                          new Date(cita.fecha_hora_inicio) > ahora && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 px-2 text-xs rounded-lg text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0"
-                            disabled={cancelarMut.isPending}
-                            onClick={() => {
-                              openConfirm({
-                                title: "Cancelar cita",
-                                description: "¿Seguro que deseas cancelar esta cita?",
-                                variant: "warning",
-                                confirmLabel: "Sí, cancelar",
-                                onConfirm: () => cancelarMut.mutate(cita.id),
-                              });
-                            }}
-                          >
-                            <Ban className="h-3.5 w-3.5" />
-                          </Button>
-                        )}
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          <PawPrint className="inline h-3 w-3 mr-1 -mt-0.5" />{cita.mascota?.nombre ?? "—"}
+                          {cita.veterinario && (
+                            <> · <Stethoscope className="inline h-3 w-3 mr-1 -mt-0.5" />{cita.veterinario.nombres} {cita.veterinario.apellidos}</>
+                          )}
+                        </p>
+                        {/* Fechas */}
+                        <div className="flex flex-col gap-0.5 mt-1.5">
+                          <p className="text-[11px] text-muted-foreground flex items-center gap-1">
+                            <CalendarDays className="h-3 w-3 shrink-0" />
+                            <span className="font-medium">Programada:</span> {fechaProg}
+                          </p>
+                          {fechaInfo && (
+                            <p className="text-[11px] text-muted-foreground flex items-center gap-1">
+                              <CheckCircle2 className="h-3 w-3 shrink-0 text-emerald-500" />
+                              {fechaInfo}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                      {i < todasLasCitas.length - 1 && <Separator />}
+
+                      {/* Botón cancelar */}
+                      {cancelable && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 px-2 text-xs rounded-lg text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0 mt-0.5"
+                          disabled={cancelarMut.isPending}
+                          onClick={() => openConfirm({
+                            title: "Cancelar cita",
+                            description: `¿Seguro que deseas cancelar tu cita de ${cita.servicio?.nombre ?? "consulta"} del ${fechaProg}?`,
+                            variant: "warning",
+                            confirmLabel: "Sí, cancelar",
+                            onConfirm: () => cancelarMut.mutate(cita.id),
+                          })}
+                        >
+                          <Ban className="h-3.5 w-3.5 mr-1" /> Cancelar
+                        </Button>
+                      )}
                     </div>
                   );
                 })}
