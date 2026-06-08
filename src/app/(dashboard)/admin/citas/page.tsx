@@ -482,7 +482,7 @@ fecha_hora_inicio: `${form.fecha}T${form.hora}:00`,      origen_reserva: 'RECEPC
                 const horaStr = citaDate.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })
                 const isDeleted = !!cita.deletedAt
                 const isCancelled = cita.estado === 'Cancelada'
-                const style = isDeleted ? cardStyles['Cancelada'] : (cardStyles[cita.estado] || cardStyles['No_Asistio'])
+                const style = isDeleted ? cardStyles['Cancelada'] : (cardStyles[cita.estado ?? ''] || cardStyles['No_Asistio'])
                 const opacityClass = (isDeleted || isCancelled) ? 'opacity-65 grayscale-[20%]' : ''
                 const textDecorationClass = (isDeleted || isCancelled) ? 'line-through decoration-muted-foreground/50' : ''
                 
