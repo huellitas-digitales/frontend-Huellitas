@@ -310,6 +310,11 @@ export default function ConsultaActivaPage() {
             <p className="text-muted-foreground mt-0.5">
               Dueño: {cita.dueno} • Especie: {cita.especie} ({cita.raza})
             </p>
+            {appointment?.createdAt && (
+              <p className="text-xs text-muted-foreground/60 mt-0.5">
+                Agendada: {new Date(appointment.createdAt).toLocaleString("es-BO", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+              </p>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2">

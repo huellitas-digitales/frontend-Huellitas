@@ -112,6 +112,11 @@ export default function SalaEsperaPage() {
                           : "—"}
                       </span>
                     </div>
+                    {(cita as any).createdAt && (
+                      <p className="text-[10px] text-muted-foreground/60 mt-1">
+                        Agendada el {format(new Date((cita as any).createdAt), "d MMM yyyy", { locale: es })}
+                      </p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
