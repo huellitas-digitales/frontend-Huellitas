@@ -74,8 +74,16 @@ export function OwnerHistoryTimeline({
                 </div>
               </div>
               
-              <div className="text-xs text-muted-foreground font-semibold flex items-center gap-1.5 bg-background px-3 py-1.5 rounded-xl border border-border/40">
-                <Calendar className="h-3.5 w-3.5 text-primary" /> {item.fecha}
+              <div className="flex flex-col items-end gap-1">
+                {item.fecha_agendada && (
+                  <div className="text-[10px] text-muted-foreground flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    Agendada: {new Date(item.fecha_agendada).toLocaleDateString("es-BO", { day: "numeric", month: "short", year: "numeric" })}
+                  </div>
+                )}
+                <div className="text-xs text-muted-foreground font-semibold flex items-center gap-1.5 bg-background px-3 py-1.5 rounded-xl border border-border/40">
+                  <Calendar className="h-3.5 w-3.5 text-primary" /> Atendida: {item.fecha}
+                </div>
               </div>
             </div>
 
