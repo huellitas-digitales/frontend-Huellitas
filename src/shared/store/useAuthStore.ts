@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import api from '@/shared/lib/axios';
 
 // 1. Así es exactamente como viene del backend
 export interface User {
@@ -38,6 +39,8 @@ export const useAuthStore = create<AuthState>()(
         user: state.user ? { ...state.user, ...partial } : null,
       })),
       logout: () => {
+        // Invalidar el token en el servidor antes de limpiarlo localmente
+        api.post('/auth/logout').catch(() => { /* si falla igual limpiamos local */ });
         set({ user: null, access_token: null });
         document.cookie = "usuario_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
       },
