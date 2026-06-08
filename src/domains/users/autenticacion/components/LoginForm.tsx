@@ -1,12 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Lock, Mail, ArrowRight, PawPrint, Heart, Shield, Stethoscope } from "lucide-react";
+import { Loader2, Lock, Mail, ArrowRight, PawPrint, Heart, Shield, Stethoscope, ShieldCheck } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
@@ -25,7 +25,26 @@ const features = [
 ];
 
 export function LoginForm() {
-  const { login, loading } = useAuth();
+  const { login, verificarOtp, loading, otpPendiente } = useAuth();
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const inputs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const handleOtpChange = (i: number, val: string) => {
+    if (!/^\d?$/.test(val)) return;
+    const next = [...otp];
+    next[i] = val;
+    setOtp(next);
+    if (val && i < 5) inputs.current[i + 1]?.focus();
+  };
+
+  const handleOtpKeyDown = (i: number, e: React.KeyboardEvent) => {
+    if (e.key === "Backspace" && !otp[i] && i > 0) inputs.current[i - 1]?.focus();
+  };
+
+  const handleOtpSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    verificarOtp(otp.join(""));
+  };
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -93,51 +112,106 @@ export function LoginForm() {
             <span className="font-bold text-primary text-lg">Huellitas</span>
           </div>
 
-          <div>
-            <h1 className="text-3xl font-black tracking-tighter mb-1">Bienvenido de vuelta</h1>
-            <p className="text-muted-foreground text-sm">Ingresa tus credenciales para continuar.</p>
-          </div>
-
-          <form onSubmit={handleSubmit((d) => login(d))} className="space-y-5">
-
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium">Correo electrónico</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input id="email" type="email" placeholder="doctor@huellitas.com"
-                  className={`pl-9 h-11 ${errors.email ? "border-destructive" : ""}`}
-                  {...register("email")} />
+          {otpPendiente ? (
+            /* ── PASO 2: OTP ── */
+            <>
+              <div className="text-center">
+                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <ShieldCheck className="h-7 w-7 text-primary" />
+                </div>
+                <h1 className="text-2xl font-black tracking-tighter mb-1">Verificación de seguridad</h1>
+                <p className="text-muted-foreground text-sm">
+                  Enviamos un código de 6 dígitos a<br />
+                  <span className="font-semibold text-foreground">{otpPendiente}</span>
+                </p>
               </div>
-              {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
-            </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-sm font-medium">Contraseña</Label>
-                <button type="button" className="text-xs text-primary hover:underline">¿Olvidaste tu clave?</button>
+              <form onSubmit={handleOtpSubmit} className="space-y-6">
+                <div className="flex justify-center gap-2">
+                  {otp.map((digit, i) => (
+                    <input
+                      key={i}
+                      ref={(el) => { inputs.current[i] = el; }}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleOtpChange(i, e.target.value)}
+                      onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                      className="w-11 h-14 text-center text-xl font-bold rounded-xl border border-border bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                    />
+                  ))}
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full h-11 rounded-full font-semibold"
+                  disabled={loading || otp.join("").length < 6}
+                >
+                  {loading
+                    ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Verificando...</>
+                    : <>Verificar código <ArrowRight className="ml-2 h-4 w-4" /></>
+                  }
+                </Button>
+
+                <p className="text-center text-xs text-muted-foreground">
+                  El código expira en 10 minutos.{" "}
+                  <button type="button" className="text-primary hover:underline"
+                    onClick={() => { setOtp(["","","","","",""]); }}>
+                    ¿No lo recibiste?
+                  </button>
+                </p>
+              </form>
+            </>
+          ) : (
+            /* ── PASO 1: Email + Password ── */
+            <>
+              <div>
+                <h1 className="text-3xl font-black tracking-tighter mb-1">Bienvenido de vuelta</h1>
+                <p className="text-muted-foreground text-sm">Ingresa tus credenciales para continuar.</p>
               </div>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input id="password" type="password" placeholder="••••••••"
-                  className={`pl-9 h-11 ${errors.password ? "border-destructive" : ""}`}
-                  {...register("password")} />
-              </div>
-              {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
-            </div>
 
-            <Button type="submit" className="w-full h-11 rounded-full font-semibold group" disabled={loading}>
-              {loading ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Conectando...</>
-              ) : (
-                <>Ingresar al sistema <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" /></>
-              )}
-            </Button>
-          </form>
+              <form onSubmit={handleSubmit((d) => login(d))} className="space-y-5">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-sm font-medium">Correo electrónico</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input id="email" type="email" placeholder="doctor@huellitas.com"
+                      className={`pl-9 h-11 ${errors.email ? "border-destructive" : ""}`}
+                      {...register("email")} />
+                  </div>
+                  {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+                </div>
 
-          <p className="text-center text-sm text-muted-foreground">
-            ¿No eres del equipo?{" "}
-            <Link href="/" className="text-primary font-semibold hover:underline">Portal de clientes</Link>
-          </p>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password" className="text-sm font-medium">Contraseña</Label>
+                    <button type="button" className="text-xs text-primary hover:underline">¿Olvidaste tu clave?</button>
+                  </div>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input id="password" type="password" placeholder="••••••••"
+                      className={`pl-9 h-11 ${errors.password ? "border-destructive" : ""}`}
+                      {...register("password")} />
+                  </div>
+                  {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
+                </div>
+
+                <Button type="submit" className="w-full h-11 rounded-full font-semibold group" disabled={loading}>
+                  {loading ? (
+                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Conectando...</>
+                  ) : (
+                    <>Ingresar al sistema <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" /></>
+                  )}
+                </Button>
+              </form>
+
+              <p className="text-center text-sm text-muted-foreground">
+                ¿No eres del equipo?{" "}
+                <Link href="/" className="text-primary font-semibold hover:underline">Portal de clientes</Link>
+              </p>
+            </>
+          )}
         </div>
       </div>
 
