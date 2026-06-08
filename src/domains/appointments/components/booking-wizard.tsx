@@ -182,7 +182,7 @@ export function BookingWizard() {
         {/* Servicio */}
         <SectionLabel>Servicio</SectionLabel>
         <div className="space-y-1.5">
-          {servicios.filter((s) => (s as any).requiere_veterinario !== false).map((s) => {
+          {servicios.filter((s) => s.requiereVeterinario !== false).map((s) => {
             const sel = servicioSel?.id === s.id;
             return (
               <button
