@@ -10,22 +10,21 @@ interface CrudService<T> {
   delete: (id: string | number) => Promise<void>;
 }
 
-export const useCrud = <T>(service: CrudService<T>, queryKey: string , options?: { enabled?: boolean }) => {
+export const useCrud = <T>(service: CrudService<T>, queryKey: string , options?: { enabled?: boolean; refetchInterval?: number }) => {
   const queryClient = useQueryClient();
 
   // 1. LEER (GET) - Maneja el estado de loading, error y la caché automáticamente
-  const { 
-    data = [], 
-    isLoading: loading, 
+  const {
+    data = [],
+    isLoading: loading,
     isError: error,
-    refetch 
+    refetch
   } = useQuery<T[]>({
     queryKey: [queryKey],
     queryFn: () => service.getAll(),
-    // Opcional: staleTime le dice a React Query cuánto tiempo la data es "fresca" 
-    // antes de volver a pedirla en segundo plano (ej. 5 minutos)
-    staleTime: 1000 * 60 * 5, 
-    enabled: options?.enabled !== undefined ? options.enabled : true, // 👈 2. Y ESTO
+    staleTime: 1000 * 60 * 5,
+    enabled: options?.enabled !== undefined ? options.enabled : true,
+    refetchInterval: options?.refetchInterval,
   });
 
   // 2. CREAR (POST)

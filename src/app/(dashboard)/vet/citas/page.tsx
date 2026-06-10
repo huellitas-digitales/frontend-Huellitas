@@ -61,7 +61,8 @@ export default function VetAgendaPersonalPage() {
 
   const { data: appointments, loading: loadingCitas, createItem: createCita, refetch: refetchCitas } = useCrud<Cita>(
     vetCalendarService,
-    `citas-vet-calendar-${user?.id}`
+    `citas-vet-calendar-${user?.id}`,
+    { refetchInterval: 30000 }
   );
 
   const today = new Date();
@@ -464,16 +465,15 @@ const handleIniciarConsulta = async (citaId: string, estadoActual: string) => {
                           <FileText className="h-3.5 w-3.5 mr-1" /> Expediente
                         </Link>
                       </Button>
-                    ) : (
-            <Button 
-  size="sm" 
-  className="rounded-xl text-xs h-8 shadow-sm" 
-  onClick={() => handleIniciarConsulta(cita.id, cita.estado)} // <-- Aquí le pasas el estado
->
-  {/* Un pequeño truco de UX: si ya estaba en curso, le cambiamos el texto al botón */}
-  {cita.estado === "En_Curso" ? "Retomar Consulta" : "Atender"} 
-  <ArrowRight className="h-3.5 w-3.5 ml-1" />
-</Button>
+                    ) : cita.estado === "Cancelada" ? null : (
+                      <Button
+                        size="sm"
+                        className="rounded-xl text-xs h-8 shadow-sm"
+                        onClick={() => handleIniciarConsulta(cita.id, cita.estado)}
+                      >
+                        {cita.estado === "En_Curso" ? "Retomar Consulta" : "Atender"}
+                        <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                      </Button>
                     )}
                   </div>
                 </div>
