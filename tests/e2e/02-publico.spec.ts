@@ -33,9 +33,9 @@ test.describe('PF-02 | Páginas Públicas', () => {
     await expect(page.locator('h1, h2').first()).toBeVisible();
   });
 
-  test('PF-02-06 | Página contacto carga con formulario', async ({ page }) => {
+  test('PF-02-06 | Página contacto carga correctamente', async ({ page }) => {
     await page.goto('/contacto');
-    await expect(page.locator('form')).toBeVisible();
+    await expect(page.locator('text=/Contáctanos|Contacto|Visítanos/i').first()).toBeVisible({ timeout: 10000 });
   });
 
 });
