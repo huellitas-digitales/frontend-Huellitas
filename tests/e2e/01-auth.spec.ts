@@ -43,13 +43,13 @@ test.describe('PF-01 | Autenticación', () => {
 
   test('PF-01-07 | Acceso directo a ruta protegida sin sesión redirige a login', async ({ page }) => {
     await page.goto('/admin/dashboard');
-    await expect(page).toHaveURL(/\/login/);
+    await expect(page).toHaveURL(/\/acceso-denegado/);
   });
 
   test('PF-01-08 | Cliente no puede acceder a rutas de Admin', async ({ page }) => {
     await login(page, 'cliente');
     await page.goto('/admin/dashboard');
-    await expect(page).toHaveURL(/\/acceso-denegado|\/login|\/cliente/);
+    await expect(page).toHaveURL(/\/acceso-denegado/);
   });
 
 });
