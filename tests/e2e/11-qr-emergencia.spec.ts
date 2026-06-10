@@ -18,7 +18,7 @@ test.describe('PF-11 | QR y Emergencia (Público)', () => {
 
   test('PF-11-03 | Página de emergencia con hash válido muestra tarjeta de mascota', async ({ page }) => {
     // Este test necesita un hash real de mascota — ajusta el hash según tu BD
-    const hashReal = process.env.TEST_QR_HASH || 'test-hash';
+    const hashReal = process.env.TEST_QR_HASH || 'MASC-CB7DECF562C3';
     await page.goto(`/emergencia/${hashReal}`);
     await page.waitForTimeout(3000);
     // Si el hash existe, debe mostrar la ficha de emergencia
