@@ -15,7 +15,7 @@ test.describe('PF-07 | Admin — Inventario', () => {
 
   test('PF-07-02 | Botón crear producto abre formulario', async ({ page }) => {
     await page.goto('/admin/inventario');
-    const createBtn = page.locator('button:has-text("Nuevo"), button:has-text("Crear"), button:has-text("Producto")');
+    const createBtn = page.locator('button:has-text("Agregar Item"), button:has-text("Agregar"), button:has-text("Nuevo"), button:has-text("Crear")');
     await expect(createBtn.first()).toBeVisible({ timeout: 8000 });
     await createBtn.first().click();
     await expect(page.locator('form, dialog, [role="dialog"]').first()).toBeVisible({ timeout: 5000 });
