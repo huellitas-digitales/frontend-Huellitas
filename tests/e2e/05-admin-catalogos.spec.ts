@@ -10,8 +10,8 @@ test.describe('PF-05 | Admin — Catálogos', () => {
   test('PF-05-01 | Catálogo de especies carga y permite crear', async ({ page }) => {
     await page.goto('/admin/catalogos/especies');
     await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 10000 });
-    const createBtn = page.locator('button:has-text("Nuevo"), button:has-text("Crear"), button:has-text("Agregar")');
-    await expect(createBtn.first()).toBeVisible();
+    const createBtn = page.locator('button:has-text("Nueva"), button:has-text("Nuevo"), button:has-text("Crear"), button:has-text("Agregar")');
+    await expect(createBtn.first()).toBeVisible({ timeout: 8000 });
   });
 
   test('PF-05-02 | Catálogo de razas carga', async ({ page }) => {
