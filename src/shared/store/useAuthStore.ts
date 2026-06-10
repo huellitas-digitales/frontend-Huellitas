@@ -49,6 +49,7 @@ export const useAuthStore = create<AuthState>()(
         }
         set({ user: null, access_token: null });
         document.cookie = "usuario_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+        document.cookie = "usuario_rol=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
       },
     }),
     { name: 'huellitas-auth' }

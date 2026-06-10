@@ -4,7 +4,7 @@ export const USERS = {
   admin: {
     email: 'admin@gmail.com',
     password: 'pepe1234',
-    rol: 'Admin',
+    rol: 'Administrador',
     redirectTo: '/admin/dashboard',
   },
   vet: {
