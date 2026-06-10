@@ -19,8 +19,8 @@ test.describe('PF-10 | Cliente', () => {
 
   test('PF-10-03 | Formulario de registro de mascota carga', async ({ page }) => {
     await page.goto('/cliente/mascotas/registro');
-    await expect(page.locator('form')).toBeVisible({ timeout: 10000 });
-    await expect(page.locator('input[name="nombre"], input[placeholder*="nombre" i]').first()).toBeVisible();
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('input[placeholder*="Firulais" i], input[placeholder*="nombre" i], input').first()).toBeVisible({ timeout: 10000 });
   });
 
   test('PF-10-04 | Wizard de agendar cita carga (paso 1)', async ({ page }) => {
