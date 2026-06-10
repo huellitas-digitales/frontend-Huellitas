@@ -1,0 +1,35 @@
+{
+  "cookies": [
+    {
+      "name": "usuario_token",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzYWQ3NzE5Ny04NjkzLTRhY2MtOTg4Ni1jZWJmY2NkNjM2YjciLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbCI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3ODEwNjgxNDgsImV4cCI6MTc4MTA3MTc0OH0.o2nHmYlGUZlb_rjInK0k--2diIx_VXRQ64RTqd6j2aU",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1781154548.220886,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "usuario_rol",
+      "value": "Administrador",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1781154548.221065,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "huellitas-auth",
+          "value": "{\"state\":{\"user\":{\"id\":\"3ad77197-8693-4acc-9886-cebfccd636b7\",\"createdAt\":\"2026-06-05T20:27:16.888Z\",\"updatedAt\":\"2026-06-05T20:27:16.888Z\",\"deletedAt\":null,\"nombres\":\"Alejandro\",\"apellidos\":\"Pardo\",\"email\":\"admin@gmail.com\",\"telefono\":\"77712345\",\"avatar_url\":null,\"numero_matricula\":null,\"estado_cuenta\":true,\"intentos_fallidos\":0,\"bloqueado_hasta\":null,\"otp_codigo\":null,\"otp_expira_en\":null,\"id_rol_fk\":1,\"created_by\":\"d4576ec1-15f4-4ca7-8cd5-6a0fb39f321d\",\"updated_by\":null,\"rol\":{\"id\":1,\"nombre\":\"Administrador\",\"descripcion\":\"Control total sobre finanzas, reportes, inventario y gestión de usuarios\",\"createdAt\":\"2026-06-05T19:01:14.595Z\",\"updatedAt\":\"2026-06-05T19:01:14.595Z\",\"deletedAt\":null}},\"access_token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzYWQ3NzE5Ny04NjkzLTRhY2MtOTg4Ni1jZWJmY2NkNjM2YjciLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbCI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3ODEwNjgxNDgsImV4cCI6MTc4MTA3MTc0OH0.o2nHmYlGUZlb_rjInK0k--2diIx_VXRQ64RTqd6j2aU\"},\"version\":0}"
+        }
+      ]
+    }
+  ]
+}
