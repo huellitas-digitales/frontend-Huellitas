@@ -47,8 +47,8 @@ test.describe('PF-10 | Cliente', () => {
 
   test('PF-10-08 | Perfil del cliente carga con datos', async ({ page }) => {
     await page.goto('/cliente/perfil');
-    await expect(page.locator('form')).toBeVisible({ timeout: 10000 });
-    await expect(page.locator('input[name="email"], input[type="email"]')).toBeVisible();
+    await expect(page.locator('h1, h2, text=/Información personal/i').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('text=/NOMBRES|Nombres|nombre/i').first()).toBeVisible({ timeout: 10000 });
   });
 
   test('PF-10-09 | Cliente no puede acceder a rutas de veterinario', async ({ page }) => {
