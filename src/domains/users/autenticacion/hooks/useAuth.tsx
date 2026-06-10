@@ -19,6 +19,7 @@ export function useAuth() {
     queryClient.clear();
     setLogin(response.usuario, response.access_token);
     document.cookie = `usuario_token=${response.access_token}; path=/; max-age=86400;`;
+    document.cookie = `usuario_rol=${response.usuario.rol.nombre}; path=/; max-age=86400;`;
     toast.success(`¡Bienvenido de vuelta, ${response.usuario.nombres}!`);
     switch (response.usuario.rol.id) {
       case 1: router.push('/admin/dashboard'); break;
