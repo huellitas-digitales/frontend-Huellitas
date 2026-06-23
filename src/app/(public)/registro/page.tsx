@@ -1,33 +1,45 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import api from '@/shared/lib/axios'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/components/ui/card'
 import { Button } from '@/shared/components/ui/button'
 import { Input } from '@/shared/components/ui/input'
 import { Label } from '@/shared/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
+import { Textarea } from '@/shared/components/ui/textarea'
+import { Switch } from '@/shared/components/ui/switch'
 import { toast } from 'sonner'
 import {
   PawPrint,
   ArrowRight,
-  ArrowLeft,
   User,
   Mail,
   Lock,
   Phone,
   CheckCircle2,
   Heart,
-  ShieldCheck,
-  Sparkles
 } from 'lucide-react'
 import { ImageUploader } from '@/shared/components/ui/image-uploader'
+
+interface Especie { id: number; nombre: string }
+interface Raza    { id: number; nombre: string }
 
 export default function RegistroPage() {
   const router = useRouter()
   const [step, setStep] = useState(1)
+
+  // Catálogos dinámicos
+  const [especies, setEspecies] = useState<Especie[]>([])
+  const [razas, setRazas]       = useState<Raza[]>([])
+  const [loadingRazas, setLoadingRazas] = useState(false)
+
+  useEffect(() => {
+    api.get('/publico/especies')
+      .then(r => setEspecies(r.data))
+      .catch(() => {/* silencioso — el select quedará vacío */})
+  }, [])
 
   // Datos Formulario
   const [formData, setFormData] = useState({
@@ -37,9 +49,12 @@ export default function RegistroPage() {
     celular: '',
     contrasena: '',
     petNombre: '',
-    petEspecie: '',
-    petRaza: '',
-    petEdad: '',
+    petEspecieId: '',
+    petRazaId: '',
+    petSexo: '',
+    petFechaNacimiento: '',
+    petCaracteristicas: '',
+    petFotoUrl: '',
     avatar_url: '',
   })
 
@@ -49,7 +64,22 @@ export default function RegistroPage() {
   }
 
   const handleSelectEspecie = (value: string) => {
-    setFormData((prev) => ({ ...prev, petEspecie: value }))
+    setFormData((prev) => ({ ...prev, petEspecieId: value, petRazaId: '' }))
+    setRazas([])
+    if (!value) return
+    setLoadingRazas(true)
+    api.get(`/publico/razas/${value}`)
+      .then(r => setRazas(r.data))
+      .catch(() => toast.error('No se pudieron cargar las razas'))
+      .finally(() => setLoadingRazas(false))
+  }
+
+  const handleSelectRaza = (value: string) => {
+    setFormData((prev) => ({ ...prev, petRazaId: value }))
+  }
+
+  const handleSelectSexo = (value: string) => {
+    setFormData((prev) => ({ ...prev, petSexo: value }))
   }
 
   const handleNextStep = (e: React.FormEvent) => {
@@ -61,29 +91,38 @@ export default function RegistroPage() {
     setStep(2)
   }
 
+  const [esterilizado, setEsterilizado] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formData.petNombre || !formData.petEspecie || !formData.petRaza || !formData.petEdad) {
-      toast.warning('Por favor completa todos los campos de tu mascota')
+    if (!formData.petNombre || !formData.petSexo) {
+      toast.warning('El nombre y sexo de la mascota son obligatorios.')
       return
     }
 
     setIsSubmitting(true)
     try {
-      await api.post('/usuarios', {
-        nombres:     formData.nombres,
-        apellidos:   formData.apellidos,
-        email:       formData.correo,
-        password:    formData.contrasena,
-        telefono:    formData.celular || undefined,
-        id_rol_fk:   4, // Cliente
-        ...(formData.avatar_url ? { avatar_url: formData.avatar_url } : {}),
+      await api.post('/auth/register', {
+        nombres:    formData.nombres,
+        apellidos:  formData.apellidos,
+        email:      formData.correo,
+        password:   formData.contrasena,
+        telefono:   formData.celular || undefined,
+        avatar_url: formData.avatar_url || undefined,
+        mascota: {
+          nombre:                  formData.petNombre,
+          sexo:                    formData.petSexo,
+          id_raza_fk:              formData.petRazaId ? Number(formData.petRazaId) : undefined,
+          fecha_nacimiento:        formData.petFechaNacimiento || undefined,
+          esterilizado:            esterilizado,
+          caracteristicas_fisicas: formData.petCaracteristicas || undefined,
+          foto_url:                formData.petFotoUrl || undefined,
+        },
       })
 
       toast.success('¡Registro exitoso!', {
-        description: 'Tu cuenta fue creada. Inicia sesión y registra tu mascota desde el portal.'
+        description: 'Tu cuenta y tu mascota fueron creadas. Ahora inicia sesión.'
       })
       router.push('/login')
     } catch (err: any) {
@@ -277,50 +316,105 @@ export default function RegistroPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <Label className="text-xs font-bold text-muted-foreground">Especie</Label>
-                  <Select onValueChange={handleSelectEspecie} value={formData.petEspecie}>
+                  <Select onValueChange={handleSelectEspecie} value={formData.petEspecieId}>
                     <SelectTrigger className="h-11 rounded-xl text-xs">
-                      <SelectValue placeholder="Selecciona" />
+                      <SelectValue placeholder="Selecciona especie" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Canino">Canino / Perro</SelectItem>
-                      <SelectItem value="Felino">Felino / Gato</SelectItem>
-                      <SelectItem value="Exotico">Exótico / Otro</SelectItem>
+                      {especies.map(e => (
+                        <SelectItem key={e.id} value={String(e.id)}>{e.nombre}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="petRaza" className="text-xs font-bold text-muted-foreground">Raza</Label>
+                  <Label className="text-xs font-bold text-muted-foreground">Sexo</Label>
+                  <Select onValueChange={handleSelectSexo} value={formData.petSexo}>
+                    <SelectTrigger className="h-11 rounded-xl text-xs">
+                      <SelectValue placeholder="Selecciona" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="M">Macho</SelectItem>
+                      <SelectItem value="H">Hembra</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-bold text-muted-foreground">Raza</Label>
+                  <Select
+                    onValueChange={handleSelectRaza}
+                    value={formData.petRazaId}
+                    disabled={!formData.petEspecieId || loadingRazas}
+                  >
+                    <SelectTrigger className="h-11 rounded-xl text-xs">
+                      <SelectValue placeholder={
+                        !formData.petEspecieId ? 'Primero elige especie' :
+                        loadingRazas ? 'Cargando...' : 'Selecciona raza'
+                      } />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {razas.map(r => (
+                        <SelectItem key={r.id} value={String(r.id)}>{r.nombre}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="petFechaNacimiento" className="text-xs font-bold text-muted-foreground">Fecha de Nacimiento</Label>
                   <Input
-                    id="petRaza"
-                    name="petRaza"
-                    placeholder="Golden Retriever"
-                    value={formData.petRaza}
+                    id="petFechaNacimiento"
+                    name="petFechaNacimiento"
+                    type="date"
+                    value={formData.petFechaNacimiento}
                     onChange={handleChange}
                     className="h-11 rounded-xl text-xs"
-                    required
                   />
                 </div>
               </div>
 
+              {/* Esterilizado toggle */}
+              <div className="flex items-center justify-between rounded-xl border border-border px-4 py-3">
+                <div>
+                  <p className="text-xs font-bold text-foreground">¿Está esterilizado/a?</p>
+                  <p className="text-xs text-muted-foreground">Castrado o espayado</p>
+                </div>
+                <Switch checked={esterilizado} onCheckedChange={setEsterilizado} />
+              </div>
+
+              {/* Características físicas */}
               <div className="space-y-1.5">
-                <Label htmlFor="petEdad" className="text-xs font-bold text-muted-foreground">Edad Estimada</Label>
-                <Input
-                  id="petEdad"
-                  name="petEdad"
-                  placeholder="Ej: 2 años, 6 meses"
-                  value={formData.petEdad}
-                  onChange={handleChange}
-                  className="h-11 rounded-xl text-xs"
-                  required
+                <Label htmlFor="petCaracteristicas" className="text-xs font-bold text-muted-foreground">
+                  Características físicas <span className="font-normal">(Opcional)</span>
+                </Label>
+                <Textarea
+                  id="petCaracteristicas"
+                  name="petCaracteristicas"
+                  placeholder="Pelaje dorado, collar rojo, mancha blanca en el pecho..."
+                  value={formData.petCaracteristicas}
+                  onChange={(e) => setFormData(prev => ({ ...prev, petCaracteristicas: e.target.value }))}
+                  className="rounded-xl text-xs resize-none"
+                  rows={2}
                 />
               </div>
 
+              {/* Foto de la mascota */}
+              <ImageUploader
+                label="Foto de la mascota (Opcional)"
+                placeholder="Seleccionar foto"
+                value={formData.petFotoUrl}
+                onChange={(url) => setFormData(prev => ({ ...prev, petFotoUrl: url }))}
+              />
+
               <div className="flex gap-2 pt-2">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => setStep(1)} 
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setStep(1)}
                   className="w-1/3 h-11 rounded-xl font-semibold border-border text-xs"
                 >
                   Atrás
