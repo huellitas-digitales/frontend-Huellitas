@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, use } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { 
   Calendar, User, Activity, HeartPulse, Clock, FileText, 
@@ -51,6 +51,7 @@ export default function HospitalizacionDashboard({ params }: { params: Promise<{
   const { id } = use(params);
   const { user } = useAuthStore();
   const isAdmin = user?.rol?.id === 1;
+  const queryClient = useQueryClient();
 
   // 2. Estados para los Modales
   const [modalLogOpen, setModalLogOpen] = useState(false);
@@ -121,6 +122,7 @@ export default function HospitalizacionDashboard({ params }: { params: Promise<{
       toast.success("Paciente dado de alta con documento de egreso registrado.");
       setModalAltaOpen(false);
       refetch();
+      queryClient.invalidateQueries({ queryKey: ['hospitalizaciones'] });
     } catch (err) {
       toast.error("Error al procesar el alta.");
       console.error(err);
