@@ -139,6 +139,7 @@ export default function CajaPosPage() {
     limpiarCaja();
     queryClient.invalidateQueries({ queryKey: ["transacciones-pos"] });
     queryClient.invalidateQueries({ queryKey: ["hospitalizaciones-pos"] });
+    queryClient.invalidateQueries({ queryKey: ["pendientes-cobro-pos"] });
     toast.success("Cobro procesado correctamente");
   };
 
@@ -355,7 +356,7 @@ export default function CajaPosPage() {
   const mascotasFilt    = mascotas.filter((m) => m.nombre.toLowerCase().includes(busquedaMascota.toLowerCase()));
   const hospActivas     = hospitalizaciones.filter((h) =>
     h.estado_actual === "Alta" &&
-    !(transacciones as any[]).some((t) => t.id_hospitalizacion_fk === h.id && t.estadoTransaccion === "Completada")
+    !(transacciones as any[]).some((t) => t.id_hospitalizacion_fk === h.id && t.estado === "Completada")
   );
   const clienteSelected = (clientes as any[]).find((c) => c.id === clienteId);
   const txHoy = transacciones.filter((t) => { try { return isToday(parseISO(t.createdAt)); } catch { return false; } });
