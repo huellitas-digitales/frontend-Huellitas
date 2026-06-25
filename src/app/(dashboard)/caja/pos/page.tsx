@@ -354,9 +354,8 @@ export default function CajaPosPage() {
   const servFiltrados   = (servicios as any[]).filter((s) => !s.deletedAt && s.nombre.toLowerCase().includes(busquedaServ.toLowerCase()));
   const clientesFilt    = (clientes as any[]).filter((c) => `${c.nombres} ${c.apellidos}`.toLowerCase().includes(busquedaCliente.toLowerCase()));
   const mascotasFilt    = mascotas.filter((m) => m.nombre.toLowerCase().includes(busquedaMascota.toLowerCase()));
-  const hospActivas     = hospitalizaciones.filter((h) =>
-    h.estado_actual === "Alta" &&
-    !(transacciones as any[]).some((t) => t.id_hospitalizacion_fk === h.id && t.estado === "Completada")
+  const hospActivas     = (hospitalizaciones as any[]).filter((h) =>
+    h.estado_actual === "Alta" && !h.cobrado
   );
   const clienteSelected = (clientes as any[]).find((c) => c.id === clienteId);
   const txHoy = transacciones.filter((t) => { try { return isToday(parseISO(t.createdAt)); } catch { return false; } });
