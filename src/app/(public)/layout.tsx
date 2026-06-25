@@ -2,6 +2,7 @@ import React from "react";
 import PublicNavbar from "@/shared/components/layout/PublicNavbar";
 import Footer from "@/shared/components/layout/Footer";
 import { PawTrail } from "@/shared/components/PawTrail";
+import { WhatsAppFloatButton } from "@/shared/components/WhatsAppFloatButton";
 
 export default function PublicLayout({
   children,
@@ -16,6 +17,7 @@ export default function PublicLayout({
         {children}
       </main>
       <Footer />
+      <WhatsAppFloatButton />
     </div>
   );
 }
