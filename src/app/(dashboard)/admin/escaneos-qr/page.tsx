@@ -97,8 +97,8 @@ export default function EscaneosQrPage() {
                   <TableCell className="py-4 px-6 font-mono text-xs text-muted-foreground">{format(new Date(e.createdAt), "dd MMM yyyy HH:mm", { locale: es })}</TableCell>
                   <TableCell className="font-semibold">{e.mascota?.nombre ?? "—"}</TableCell>
                   <TableCell className="font-mono text-sm text-muted-foreground">{e.user_agent ? e.user_agent.slice(0, 40) + (e.user_agent.length > 40 ? "…" : "") : "—"}</TableCell>
-                  <TableCell className="font-mono text-sm">{e.latitud?.toFixed(6) ?? <span className="text-muted-foreground text-xs">sin dato</span>}</TableCell>
-                  <TableCell className="font-mono text-sm">{e.longitud?.toFixed(6) ?? <span className="text-muted-foreground text-xs">sin dato</span>}</TableCell>
+                  <TableCell className="font-mono text-sm">{e.latitud != null ? parseFloat(String(e.latitud)).toFixed(6) : <span className="text-muted-foreground text-xs">sin dato</span>}</TableCell>
+                  <TableCell className="font-mono text-sm">{e.longitud != null ? parseFloat(String(e.longitud)).toFixed(6) : <span className="text-muted-foreground text-xs">sin dato</span>}</TableCell>
                   <TableCell>
                     {e.latitud && e.longitud ? (
                       <a href={`https://www.google.com/maps?q=${e.latitud},${e.longitud}`} target="_blank" rel="noopener noreferrer">
