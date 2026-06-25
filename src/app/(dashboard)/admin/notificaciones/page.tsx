@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Bell, CheckCircle2, XCircle, Clock, Loader2, Search, Eye, RefreshCw } from "lucide-react";
+import { Bell, CheckCircle2, XCircle, Clock, Loader2, Search, Eye, RefreshCw, Send } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -27,6 +27,7 @@ export default function NotificacionesPage() {
   const [filtroEstado, setFiltro]     = useState("todos");
   const [selected, setSelected]       = useState<Notificacion | null>(null);
   const [reenviando, setReenviando]   = useState<string | null>(null);
+  const [enviandoManual, setEnviandoManual] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: notifs = [], isLoading } = useQuery<Notificacion[]>({
@@ -48,6 +49,19 @@ export default function NotificacionesPage() {
   const totalEnviadas   = sinQr.filter((n) => n.estadoEnvio?.toLowerCase() === "enviado").length;
   const totalError      = sinQr.filter((n) => ["error", "fallido"].includes(n.estadoEnvio?.toLowerCase())).length;
   const totalPendientes = sinQr.filter((n) => n.estadoEnvio?.toLowerCase() === "pendiente").length;
+
+  const handleEjecutarManual = async () => {
+    setEnviandoManual(true);
+    try {
+      await notificacionesService.ejecutarManual();
+      toast.success("Recordatorios enviados correctamente a todos los clientes.");
+      queryClient.invalidateQueries({ queryKey: ["notificaciones"] });
+    } catch {
+      toast.error("Error al enviar los recordatorios.");
+    } finally {
+      setEnviandoManual(false);
+    }
+  };
 
   const handleReenviar = async (id: string) => {
     setReenviando(id);
@@ -78,6 +92,18 @@ export default function NotificacionesPage() {
         <Badge variant="outline" className="mb-2 bg-primary/10 text-primary border-primary/20 rounded-full">Comunicaciones</Badge>
         <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-primary to-chart-1 bg-clip-text text-transparent">Centro de Notificaciones</h1>
         <p className="text-muted-foreground mt-1">Log de recordatorios enviados a clientes vía WhatsApp y correo.</p>
+        <div className="mt-4">
+          <Button
+            onClick={handleEjecutarManual}
+            disabled={enviandoManual}
+            className="rounded-xl gap-2"
+          >
+            {enviandoManual
+              ? <><Loader2 className="h-4 w-4 animate-spin" />Enviando recordatorios...</>
+              : <><Send className="h-4 w-4" />Enviar recordatorios ahora</>
+            }
+          </Button>
+        </div>
         <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/5 blur-3xl" />
       </div>
 
