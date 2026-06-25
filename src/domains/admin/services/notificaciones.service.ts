@@ -29,4 +29,8 @@ export const notificacionesService = {
     const { data } = await api.post<{ mensaje: string }>(`/notificaciones/${id}/reenviar`);
     return data;
   },
+  ejecutarManual: async (): Promise<{ vacunas: string; citas: string; stock: string }> => {
+    const { data } = await api.post('/notificaciones/scheduler/ejecutar-manual');
+    return data;
+  },
 };
