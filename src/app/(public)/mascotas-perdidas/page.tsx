@@ -8,7 +8,7 @@ import { MapPin, Calendar, Phone, Search, ArrowRight, AlertTriangle, Heart, Gift
 import { Button } from "@/shared/components/ui/button";
 import api from "@/shared/lib/axios";
 
-const BASE_URL = "https://huellitas-digitales.net";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://huellitas-digitales.vercel.app";
 
 function buildShareText(m: { nombre: string; raza: string; especie: string; zona: string; telefono_contacto: string | null; hash_qr_identidad: string }) {
   const url = `${BASE_URL}/emergencia/${m.hash_qr_identidad}`;

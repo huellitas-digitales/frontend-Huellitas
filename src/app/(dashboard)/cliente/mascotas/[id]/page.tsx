@@ -170,7 +170,7 @@ export default function PerfilMascotaPage() {
     vacunas:   vacunasReales,
   }
 
-  const urlEmergenciaPublica = `https://huellitas-digitales.net/emergencia/${apiMascota.hash_qr_identidad}`
+  const urlEmergenciaPublica = `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://huellitas-digitales.vercel.app'}/emergencia/${apiMascota.hash_qr_identidad}`
 
   // Estado visual para hospitalizacion
   const HOSP_COLOR: Record<string, string> = {

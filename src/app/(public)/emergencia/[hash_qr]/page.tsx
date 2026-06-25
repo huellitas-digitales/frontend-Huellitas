@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import FichaEmergenciaCliente from './ficha-emergencia'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api/huellitas'
-const SITE_URL = 'https://huellitas-digitales.net'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://huellitas-digitales.vercel.app'
 
 interface Props {
   params: Promise<{ hash_qr: string }>
